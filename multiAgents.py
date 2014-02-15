@@ -82,9 +82,13 @@ class ReflexAgent(Agent):
 
         ghostDis = 0
         for pos in newGhostPos:
-          ghostDis += euclideanDis(newPos, pos)
+          dis = euclideanDis(newPos, pos)
+          if dis < 20:
+            ghostDis -= 20
+          else:
+            ghostDis += dis
         for pos in currentGhost:
-          ghostDis -= euclideanDis(currentPos, pos)
+          dis -= euclideanDis(currentPos, pos)
 
         clostestFoodDis = float('inf')
         for food in currentFood:
@@ -92,11 +96,10 @@ class ReflexAgent(Agent):
           if foodDis < clostestFoodDis:
             closetFood = food
             clostestFoodDis = foodDis
-        scoreDif = successorGameState.getScore() - currentGameState.getScore()
-        foodDif = manhattanDistance(newPos, closetFood) - clostestFoodDis
+        scoreDif = successorGameState.getScore()
+        foodDif = manhattanDistance(newPos, closetFood)
 
-        result = ghostDis + scoreDif - foodDif
-        print(result)
+        result = ghostDis * 10 + scoreDif - foodDif
         return result
 
 def euclideanDis(xy1, xy2):
