@@ -99,7 +99,7 @@ class ReflexAgent(Agent):
         scoreDif = successorGameState.getScore()
         foodDif = manhattanDistance(newPos, closetFood)
 
-        result = ghostDis * 10 + scoreDif - foodDif
+        result = ghostDis * 10 + scoreDif - foodDif * 2
         return result
 
 def euclideanDis(xy1, xy2):
