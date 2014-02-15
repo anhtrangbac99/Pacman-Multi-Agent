@@ -84,7 +84,7 @@ class ReflexAgent(Agent):
         for pos in newGhostPos:
           dis = euclideanDis(newPos, pos)
           if dis < 20:
-            ghostDis -= 20
+            ghostDis -= 30
           else:
             ghostDis += dis
         for pos in currentGhost:
@@ -99,7 +99,7 @@ class ReflexAgent(Agent):
         scoreDif = successorGameState.getScore()
         foodDif = manhattanDistance(newPos, closetFood)
 
-        result = ghostDis * 10 + scoreDif - foodDif * 2
+        result = ghostDis * 8 + scoreDif - foodDif * 2
         return result
 
 def euclideanDis(xy1, xy2):
@@ -158,7 +158,30 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        def minimax(state, depth):
+          if depth <= 0:
+            return self.evaluationFunction(state)
+          result = float('inf')
+          if depth % 2 == 0:
+            result *= -1
+          actions = state.getLegalActions(0)
+          for action in actions:
+            score = minimax(state.generateSuccessor(0, action), depth-1)
+            if depth % 2 == 0:
+              result = max(result, score)
+            else:
+              result = min(result, score)
+          return result
+
+        maxScore = -1 * float('inf')
+        action = None
+        for legalAction in gameState.getLegalActions(0):
+          score = minimax(gameState.generateSuccessor(0, legalAction), self.depth)
+          if score > maxScore:
+            maxScore = score
+            action = legalAction
+        return action
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
