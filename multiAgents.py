@@ -158,29 +158,39 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        def minimax(state, depth):
-          if depth <= 0:
-            return self.evaluationFunction(state)
-          result = float('inf')
-          if depth % 2 == 0:
-            result *= -1
-          actions = state.getLegalActions(0)
-          for action in actions:
-            score = minimax(state.generateSuccessor(0, action), depth-1)
-            if depth % 2 == 0:
-              result = max(result, score)
-            else:
-              result = min(result, score)
-          return result
 
-        maxScore = -1 * float('inf')
-        action = None
-        for legalAction in gameState.getLegalActions(0):
-          score = minimax(gameState.generateSuccessor(0, legalAction), self.depth)
-          if score > maxScore:
-            maxScore = score
-            action = legalAction
+        def value(state, agentIndex, depth):
+          
+          def min_value(state):
+            v = float('inf')
+            for action in state.getLegalActions(agentIndex):
+              v = min(v, value(state.generateSuccessor(agentIndex, action),0,depth+1))
+            return v
+
+          def max_value(state):
+            v = -1 * float('inf')
+            for i in range(1, numAgents):
+              for action in state.getLegalActions(agentIndex):
+                v = max(v, value(state.generateSuccessor(agentIndex, action),i,depth+1))
+            return v
+
+          numAgents = state.getNumAgents()
+          if depth == self.depth or gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(state)
+          if agentIndex == 0:
+            return max_value(state)
+          return min_value(state)
+
+        numAgents = gameState.getNumAgents()
+        v = -1 * float('inf')
+        decision = None
+        for i in range(1, numAgents):
+          for action in gameState.getLegalActions(0):
+            currentV = value(gameState.generateSuccessor(0, action),i,0)
+            if currentV > v:
+              v = currentV
         return action
+          
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
