@@ -80,7 +80,7 @@ class ReflexAgent(Agent):
         currentGhost = currentGameState.getGhostPositions()
         newGhostPos = successorGameState.getGhostPositions()
 
-        ghostDis = 0
+        ghostDis, totalScareTime = 0, 0
         for pos in newGhostPos:
           dis = euclideanDis(newPos, pos)
           if dis < 20:
@@ -99,7 +99,7 @@ class ReflexAgent(Agent):
         scoreDif = successorGameState.getScore()
         foodDif = manhattanDistance(newPos, closetFood)
 
-        result = ghostDis * 8 + scoreDif - foodDif * 2
+        result = ghostDis * 8 + scoreDif - foodDif * 2 - len(newFood.asList())
         return result
 
 def euclideanDis(xy1, xy2):
@@ -160,49 +160,42 @@ class MinimaxAgent(MultiAgentSearchAgent):
         "*** YOUR CODE HERE ***"
 
         def value(state, agentIndex, depth):
-            numAgents = state.getNumAgents()
 
             def max_value(currenState):
                 v, decision = -float('inf'), None
-                actions = state.getLegalActions(agentIndex)
+                actions = currenState.getLegalActions(agentIndex)
                 if len(actions) == 0:
                     return (self.evaluationFunction(currenState), None)
-                    return (None, None)
                 for action in actions:
-                    nextState = state.generateSuccessor(agentIndex, action)
-                    nextAgent = (numAgents + agentIndex + 1) % numAgents
-                    nextValue, nextAction = value(nextState, nextAgent, depth+1)
+                    nextState = currenState.generateSuccessor(agentIndex, action)
+                    nextValue, nextAction = value(nextState, nextAgent, depth)
                     if nextValue and nextValue > v:
                         v, decision = nextValue, action
                 return (v, decision)
 
             def min_value(currenState):
                 v, decision = float('inf'), None
-                actions = state.getLegalActions(agentIndex)
+                actions = currenState.getLegalActions(agentIndex)
                 if len(actions) == 0:
                     return (self.evaluationFunction(currenState), None)
-                    return (None, None)
                 for action in actions:
-                    nextState = state.generateSuccessor(agentIndex, action)
-                    nextAgent = (numAgents + agentIndex + 1) % numAgents
-                    if nextAgent != 0:
-                        nextValue, nextAction = value(nextState, nextAgent, depth)
-                    else:
-                        nextValue, nextAction = value(nextState, nextAgent, depth+1)
+                    nextState = currenState.generateSuccessor(agentIndex, action)
+                    nextValue, nextAction = value(nextState, nextAgent, depth)
                     if nextValue and nextValue < v:
                         v, decision = nextValue, action
                 return (v, decision)
 
-            if depth > self.depth or gameState.isWin() or gameState.isLose():
-                v = (self.evaluationFunction(state), None)
+            numAgents = state.getNumAgents()
+            nextAgent = (numAgents + agentIndex + 1) % numAgents
+            if nextAgent == 0:
+                depth+=1
+            if depth == self.depth or gameState.isWin() or gameState.isLose():
+                return (self.evaluationFunction(state), None)
             if agentIndex == 0:
-                v = max_value(state)
-            else:
-                v = min_value(state)
-            # print(agentIndex, depth, v)
-            return(v)
+                return max_value(state)
+            return min_value(state)
 
-        min_v, action =  value(gameState, 0, 1)
+        min_v, action =  value(gameState, 0, 0)
         return action
 
 
