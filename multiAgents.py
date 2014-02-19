@@ -188,7 +188,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
             numAgents = state.getNumAgents()
             nextAgent = (numAgents + agentIndex + 1) % numAgents
-            if nextAgent == 0:
+            if agentIndex == 0:
                 depth+=1
             if depth == self.depth or gameState.isWin() or gameState.isLose():
                 return (self.evaluationFunction(state), None)
