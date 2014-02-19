@@ -170,7 +170,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 for action in actions:
                     nextState = currenState.generateSuccessor(agentIndex, action)
                     nextValue, nextAction = value(nextState, nextAgent, depth)
-                    if nextValue and nextValue > v:
+                    if nextValue > v:
                         v, decision = nextValue, action
                 return (v, decision)
 
@@ -182,7 +182,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 for action in actions:
                     nextState = currenState.generateSuccessor(agentIndex, action)
                     nextValue, nextAction = value(nextState, nextAgent, depth)
-                    if nextValue and nextValue < v:
+                    if nextValue < v:
                         v, decision = nextValue, action
                 return (v, decision)
 
@@ -196,7 +196,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 return max_value(state)
             return min_value(state)
 
-        min_v, action =  value(gameState, 0, 0)
+        min_v, action =  value(gameState, 0, -1)
         return action
 
 
