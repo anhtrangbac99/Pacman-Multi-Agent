@@ -69,6 +69,7 @@ class ReflexAgent(Agent):
         to create a masterful evaluation function.
         """
         # Useful information you can extract from a GameState (pacman.py)
+        
         successorGameState = currentGameState.generatePacmanSuccessor(action)
         newPos = successorGameState.getPacmanPosition()
         newFood = successorGameState.getFood()
@@ -76,35 +77,20 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        currentFood = currentGameState.getFood().asList()
-        currentPos = currentGameState.getPacmanPosition()
-        currentGhost = currentGameState.getGhostPositions()
         newGhostPos = successorGameState.getGhostPositions()
-
-        ghostDis, totalScareTime = 0, 0
+        currentFood = newFood.asList()
+        disToGhost = 0
         for pos in newGhostPos:
-          dis = euclideanDis(newPos, pos)
-          if dis < 20:
-            ghostDis -= 30
-          else:
-            ghostDis += dis
-        for pos in currentGhost:
-          dis -= euclideanDis(currentPos, pos)
-
-        clostestFoodDis = float('inf')
+            dis = manhattanDistance(newPos, pos)
+            if dis != 0 and dis < 5:
+                disToGhost += 1.0 / dis
+        foodToFood = 0
         for food in currentFood:
-          foodDis = manhattanDistance(food, currentPos)
-          if foodDis < clostestFoodDis:
-            closetFood = food
-            clostestFoodDis = foodDis
+            foodToFood += 1.0 / manhattanDistance(newPos, food)
         scoreDif = successorGameState.getScore()
-        foodDif = manhattanDistance(newPos, closetFood)
-
-        result = ghostDis * 8 + scoreDif - foodDif * 2 - len(newFood.asList())
+        result = scoreDif + foodToFood - disToGhost
         return result
-
-def euclideanDis(xy1, xy2):
-  return ( (xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2 ) ** 0.5
+        
 
 def scoreEvaluationFunction(currentGameState):
     """
@@ -143,20 +129,20 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
     def getAction(self, gameState):
         """
-          Returns the minimax action from the current gameState using self.depth
-          and self.evaluationFunction.
+        Returns the minimax action from the current gameState using self.depth
+        and self.evaluationFunction.
 
-          Here are some method calls that might be useful when implementing minimax.
+        Here are some method calls that might be useful when implementing minimax.
 
-          gameState.getLegalActions(agentIndex):
-            Returns a list of legal actions for an agent
-            agentIndex=0 means Pacman, ghosts are >= 1
+        gameState.getLegalActions(agentIndex):
+        Returns a list of legal actions for an agent
+        agentIndex=0 means Pacman, ghosts are >= 1
 
-          gameState.generateSuccessor(agentIndex, action):
-            Returns the successor game state after an agent takes an action
+        gameState.generateSuccessor(agentIndex, action):
+        Returns the successor game state after an agent takes an action
 
-          gameState.getNumAgents():
-            Returns the total number of agents in the game
+        gameState.getNumAgents():
+        Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
 
