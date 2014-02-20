@@ -209,7 +209,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                     nextValue, nextAction = value(nextState, nextAgent, depth, alpha, beta)
                     if nextValue > v:
                         v, decision = nextValue, action
-                    if v >= beta:
+                    if v > beta:
                         return (v, decision)
                     alpha = max(alpha, v)
                 return (v, decision)
@@ -224,7 +224,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                     nextValue, nextAction = value(nextState, nextAgent, depth, alpha, beta)
                     if nextValue < v:
                         v, decision = nextValue, action
-                    if v <= alpha:
+                    if v < alpha:
                         return (v, decision)
                     beta = min(beta, v)
                 return (v, decision)
