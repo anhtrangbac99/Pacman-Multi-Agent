@@ -196,7 +196,51 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        def value(state, agentIndex, depth, alpha, beta):
+
+            def max_value(currenState, alpha, beta):
+                v, decision = -float('inf'), None
+                actions = currenState.getLegalActions(agentIndex)
+                if len(actions) == 0:
+                    return (self.evaluationFunction(currenState), None)
+                for action in actions:
+                    nextState = currenState.generateSuccessor(agentIndex, action)
+                    nextValue, nextAction = value(nextState, nextAgent, depth, alpha, beta)
+                    if nextValue > v:
+                        v, decision = nextValue, action
+                    if v >= beta:
+                        return (v, decision)
+                    alpha = max(alpha, v)
+                return (v, decision)
+
+            def min_value(currenState, alpha, beta):
+                v, decision = float('inf'), None
+                actions = currenState.getLegalActions(agentIndex)
+                if len(actions) == 0:
+                    return (self.evaluationFunction(currenState), None)
+                for action in actions:
+                    nextState = currenState.generateSuccessor(agentIndex, action)
+                    nextValue, nextAction = value(nextState, nextAgent, depth, alpha, beta)
+                    if nextValue < v:
+                        v, decision = nextValue, action
+                    if v <= alpha:
+                        return (v, decision)
+                    beta = min(beta, v)
+                return (v, decision)
+
+            numAgents = state.getNumAgents()
+            nextAgent = (numAgents + agentIndex + 1) % numAgents
+            if agentIndex == 0:
+                depth+=1
+            if depth == self.depth or gameState.isWin() or gameState.isLose():
+                return (self.evaluationFunction(state), None)
+            if agentIndex == 0:
+                return max_value(state, alpha, beta)
+            return min_value(state, alpha, beta)
+
+        min_v, action =  value(gameState, 0, -1, -float('inf'), float('inf'))
+        return action
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
